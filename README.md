@@ -1,5 +1,5 @@
 # TUK-2024-DeepFakeDetection
-We are processing ongoing project that detects Deepfake video Web Pages.
+We are processing ongoing project that construct Web Pages to detects Deepfake video.
 
 This Project is constructed by 3 parts of structures each front, back, algorithms.
 
