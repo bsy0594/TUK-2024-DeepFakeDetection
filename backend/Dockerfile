@@ -1,4 +1,4 @@
-# 1. 사용할 Python 기반 이미지 선택 (경량 버전 사용)
+# 1. 사용할 Python 기반 이미지 선택
 FROM python:3.13.2
 
 # 2. 컨테이너 내부에서 사용할 작업 디렉토리 설정
@@ -11,7 +11,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 5. 프로젝트 코드 전체를 컨테이너 내부로 복사
-COPY . .
+# COPY . .
 
 # 6. FastAPI 서버 실행
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-dir", "/app"]
