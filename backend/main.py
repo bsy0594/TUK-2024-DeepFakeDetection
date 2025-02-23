@@ -64,18 +64,8 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
     db.add(video)
     await db.commit()
 
-    # file_url = f"/static/{filename}"  # 저장된 파일의 URL 생성
-
-    # return {"video_id": video_id, "video_url": file_url}
-
     # 로컬에 있는 이미지 파일을 URL로 변환하여 반환
     image_files = os.listdir(IMAGE_DIR)
-    
-    # # 이미지 파일들에 대한 URL 생성
-    # image_urls = [
-    #     {"image_id": str(uuid.uuid4()), "image_url": f"/static/{filename}", "prediction": random.random()}
-    #     for filename in image_files
-    # ]
     image_urls = [
         {"frame_index": index, "original_image": f"/static/{filename}", "gradcam_image": f"/static/{filename}", "prediction": random.random()}
         for index, filename in enumerate(image_files)
