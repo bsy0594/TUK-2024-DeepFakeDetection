@@ -2,7 +2,7 @@ import cv2
 import os
 import argparse
 
-def extract_frames(video_path, output_folder, frame_rate=1):
+def extract_frames(video_path, output_folder, frame_rate=15):
     """
     MP4 영상에서 일정 간격으로 프레임을 추출하여 저장하는 함수.
 

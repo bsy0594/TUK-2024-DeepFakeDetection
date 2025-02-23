@@ -9,6 +9,8 @@ import uuid
 import shutil
 import random
 from ml.process_video import extract_frames
+from fastapi.middleware.cors import CORSMiddleware
+
 
 # 애플리케이션 시작 시 데이터베이스 테이블 생성
 async def init_db():
@@ -24,6 +26,18 @@ async def lifespan(app: FastAPI):
     # await app.state.db.close()  # DB 연결 해제
 
 app = FastAPI(lifespan=lifespan)
+
+origins = [
+    r"https://tuk-2024-deepfakedetection.streamlit.app",  # 프론트 배포 도메인
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # 허용할 origin 목록
+    allow_credentials=True,  # 인증 정보 포함 허용 (예: 쿠키, Authorization 헤더)
+    allow_methods=["*"],  # 모든 HTTP 메서드 허용 (GET, POST, PUT 등)
+    allow_headers=["*"],  # 모든 HTTP 헤더 허용
+)
 
 IMAGE_DIR = "images"
 VIDEO_DIR = "videos"
