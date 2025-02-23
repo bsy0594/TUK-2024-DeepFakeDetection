@@ -4,6 +4,7 @@ from sidebar import sidebar
 from signup import signup
 import result_UI
 import result_server
+import os
 
 st.set_page_config(page_title="Fake Marker", page_icon="😎")
 
@@ -11,6 +12,9 @@ st.set_page_config(page_title="Fake Marker", page_icon="😎")
 # video_file = open("boynextdoor_ifIsayILOVEYOU.mp4", "rb")
 # video_bytes = video_file.read()
 # st.video(video_bytes, start_time=45, autoplay=True, muted=True)
+
+cwd = os.getcwd()
+st.write(cwd)
 
 sidebar()
 
