@@ -5,7 +5,7 @@ from yaml.loader import SafeLoader
 
 # Login
 def sidebar():
-    with open("./config.yaml") as file:
+    with open("config.yaml") as file:
         config = yaml.load(file, Loader=SafeLoader)
 
     # Create authentication object
