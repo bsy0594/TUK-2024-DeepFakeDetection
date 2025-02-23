@@ -5,7 +5,7 @@ backend/videos/
 backend/images/
 
 # frontend
-
+frontend/__pycache__/
 
 # ml
 backend/ml/__pycache__/
