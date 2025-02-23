@@ -4,12 +4,11 @@ services:
   fastapi:
     build: .
     container_name: fastapi-container
-    image: fastapi-container
     ports:
       - "8000:8000"
     volumes:
-    - .:/app  # 로컬 프로젝트 폴더를 컨테이너와 동기화
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-dir", "/app"]  # 개발 모드에서 코드 변경 시 자동으로 서버 재시작
+      - .:/app  # 개발 환경에서 코드 변경 자동 반영 (운영 환경이라면 제거 가능)
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
     depends_on:
       db:
         condition: service_healthy

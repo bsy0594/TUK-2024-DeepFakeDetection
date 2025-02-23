@@ -4,6 +4,6 @@ backend/database/__pycache__/
 backend/videos/
 
 # frontend
-
+frontend/__pycache__/
 
 # ml

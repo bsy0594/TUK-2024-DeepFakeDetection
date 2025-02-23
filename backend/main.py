@@ -7,6 +7,7 @@ import os
 import uuid
 import shutil
 import random
+import uvicorn
 
 # 애플리케이션 시작 시 데이터베이스 테이블 생성
 async def init_db():
@@ -71,3 +72,6 @@ async def postVideo(file: UploadFile = File(...)):
     ]
     
     return {"images": image_urls}
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
