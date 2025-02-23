@@ -117,15 +117,26 @@ def detail_result(placeholder):
     original_image_url = urljoin(FASTAPI_URL, original_image)
     gradcam_image_url = urljoin(FASTAPI_URL, gradcam_image)
 
+    original_image_response = requests.get(original_image_url)
+    gradcam_image_response = requests.get(gradcam_image_url)
+
     # gradcam 방식으로 프레임들 출력
     gradcam_toggle = st.checkbox("Show Grad-CAM")
 
     if gradcam_toggle:
-        frame_name = os.path.basename(gradcam_image_url)
-        st.image(gradcam_image_url, caption=f"'{frame_name}' is suspected to be deepfake with {prob*100:.2f}%")
+        if gradcam_image_response.status_code == 200:
+            frame_name = os.path.basename(gradcam_image_url)
+            image = Image.open(BytesIO(gradcam_image_response.content))
+            st.image(image, caption=f"'{frame_name}' is suspected to be deepfake with {prob*100:.2f}%")
+        else:
+            st.error("Gradcam Image not found")
     else:
-        frame_name = os.path.basename(original_image_url)
-        st.image(original_image_url, caption=f"'{frame_name}' is suspected to be deepfake with {prob*100:.2f}%")
+        if original_image_response.status_code == 200:
+            frame_name = os.path.basename(original_image_url)
+            image = Image.open(BytesIO(original_image_response.content))
+            st.image(image, caption=f"'{frame_name}' is suspected to be deepfake with {prob*100:.2f}%")
+        else:
+            st.error("Original Image not found")
 
     # 프레임 별 확률에 대한 그래프
     st.markdown("### ")
