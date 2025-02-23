@@ -13,9 +13,6 @@ st.set_page_config(page_title="Fake Marker", page_icon="😎")
 # video_bytes = video_file.read()
 # st.video(video_bytes, start_time=45, autoplay=True, muted=True)
 
-cwd = os.getcwd()
-st.write(cwd)
-
 sidebar()
 
 placeholder = st.empty()
