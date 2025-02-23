@@ -77,7 +77,7 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
     #     for filename in image_files
     # ]
     image_urls = [
-        {"frame_index": index, "image_url": f"/static/{filename}", "prediction": random.random()}
+        {"frame_index": index, "original_image": f"/static/{filename}", "gradcam_image": f"/static/{filename}", "prediction": random.random()}
         for index, filename in enumerate(image_files)
     ]
     
