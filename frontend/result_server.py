@@ -11,7 +11,7 @@ def main_result(placeholder, uploaded_file, model_name):
     placeholder.empty()
 
     # 서버로 파일 및 옵션 전송
-    FASTAPI_URL = "http://218.48.124.18:8000"
+    FASTAPI_URL = "http://127.0.0.1:8000"
     detection_post_endpoint = "/video/"
     api_url = urljoin(FASTAPI_URL, detection_post_endpoint)
 
@@ -98,8 +98,7 @@ def detail_result(placeholder):
         ### High Probability Frames
         """
     )
-
-    FASTAPI_URL = "http://218.48.124.18:8000"
+    FASTAPI_URL = "http://127.0.0.1:8000"
 
     frame_index = st.slider("Select Frame", 0, len(high_prob_frames) - 1, 0)
     frame, prob = high_prob_frames[frame_index]
