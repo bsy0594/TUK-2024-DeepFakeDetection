@@ -2,4 +2,4 @@ fastapi[all]
 sqlalchemy
 asyncpg
 watchfiles
-python-ulid[pydantic]
+uuid7
