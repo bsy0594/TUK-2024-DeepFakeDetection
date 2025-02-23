@@ -1,8 +1,6 @@
 import cv2
 import os
 import argparse
-import numpy as np
-import imageio
 
 def extract_frames(video_path, output_folder, frame_rate=1):
     """
