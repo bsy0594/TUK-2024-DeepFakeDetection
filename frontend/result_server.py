@@ -1,19 +1,22 @@
+import os
+from urllib.parse import urljoin
 import streamlit as st
 import requests
 import json
-import os
-from urllib.parse import urljoin
+import plotly.express as px
+import pandas as pd
+from datetime import datetime
 
-def main_result(placeholder, uploaded_file, option):
+def main_result(placeholder, uploaded_file, model_name):
     placeholder.empty()
 
     # 서버로 파일 및 옵션 전송
-    FASTAPI_URL = "http://localhost:8000"
+    FASTAPI_URL = "http://218.48.124.18:8000"
     detection_post_endpoint = "/video/"
     api_url = urljoin(FASTAPI_URL, detection_post_endpoint)
 
-    files = {"file": (uploaded_file.name, uploaded_file.getvalue())}
-    data = {"model": option}
+    files = {"file": uploaded_file.getvalue()}
+    data = {"model": model_name}
     response = requests.post(api_url, files=files, data=data, timeout=60)
 
     if response.status_code == 200:
@@ -42,15 +45,16 @@ def main_result(placeholder, uploaded_file, option):
                     max_prob_frame = image_url[index]
 
         st.session_state.high_prob_frames = high_prob_frames
+        st.session_state.prediction = prediction
+        st.session_state.frame_index = frame_index
 
         # 확률이 가장 높은 프레임을 메인으로 출력
         if len(high_prob_frames) > 0:
-            st.markdown("### ⚠️ Deepfake is detected ⚠️")
+            st.markdown("# ⚠️ Deepfake is detected ⚠️")
             frame_url = urljoin(FASTAPI_URL, max_prob_frame)
             st.image(frame_url, use_container_width=True)
-            st.write(high_prob_frames)
         else:
-            st.markdown("#### No Deepfake Detected 🎉")
+            st.markdown("# No Deepfake Detected 🎉")
 
         # 결과 자세히 보러가기 버튼
         if "clicked" not in st.session_state:
@@ -69,10 +73,33 @@ def detail_result(placeholder):
     placeholder.empty()
 
     high_prob_frames = st.session_state.high_prob_frames
+    probabilities = st.session_state.prediction
+    frame_indices = st.session_state.frame_index
+    uploaded_file = st.session_state.uploaded_file
+    model_name = st.session_state.model_name
+
+    st.markdown("# ⚠️ Deepfake is detected ⚠️")
+
+    # 영상, 모델, 시간 정보 출력
+    col1, col2 = st.columns([2, 2])
+
+    with col1:
+        st.markdown(f"**Name:** {uploaded_file.name}")  
+        st.markdown(f"**Size:** {uploaded_file.size / 1048576:.2f} MB")
+
+    with col2:
+        st.markdown(f"**Model:** {model_name}")
+        st.markdown(f"**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     # 확률이 높은 프레임들 출력
-    st.markdown("### ⚠️ Deepfake is detected ⚠️")
-    FASTAPI_URL = "http://localhost:8000"
+    st.markdown(
+        """
+        ######
+        ### High Probability Frames
+        """
+    )
+
+    FASTAPI_URL = "http://218.48.124.18:8000"
 
     frame_index = st.slider("Select Frame", 0, len(high_prob_frames) - 1, 0)
     frame, prob = high_prob_frames[frame_index]
@@ -88,4 +115,19 @@ def detail_result(placeholder):
         else:
             st.error("Grad-CAM image not found.")
     else:
-        st.image(frame_url, caption=f"'{frame}' is suspected to be deepfake with {prob*100:.2f}%")
+        frame_name = os.path.basename(frame)
+        st.image(frame_url, caption=f"'{frame_name}' is suspected to be deepfake with {prob*100:.2f}%")
+
+    # 프레임 별 확률에 대한 그래프
+    st.markdown("### ")
+    st.markdown("### Deepfake Probability per Frame")
+
+    df = pd.DataFrame({
+        "Frame": frame_indices,
+        "Probability": probabilities
+    })
+
+    fig = px.line(df, x="Frame", y="Probability")
+    fig.update_xaxes(rangeslider_visible=True)
+
+    st.plotly_chart(fig, use_container_width=True)
