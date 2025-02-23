@@ -6,6 +6,8 @@ import json
 import plotly.express as px
 import pandas as pd
 from datetime import datetime
+from PIL import Image
+from io import BytesIO
 
 def main_result(placeholder, uploaded_file, model_name):
     placeholder.empty()
@@ -55,7 +57,17 @@ def main_result(placeholder, uploaded_file, model_name):
             st.markdown("# ⚠️ Deepfake is detected ⚠️")
             frame_url = urljoin(FASTAPI_URL, max_prob_frame)
             st.write(frame_url)
-            st.image(frame_url, use_container_width=True)
+
+            # HTTP 요청으로 이미지 가져오기
+            response = requests.get(frame_url)
+
+            if response.status_code == 200:
+                image = Image.open(BytesIO(response.content))
+                st.image(image, use_column_width=True)
+            else:
+                st.error("이미지를 불러올 수 없습니다.")
+
+            # st.image(frame_url, use_container_width=True)
         else:
             st.markdown("# No Deepfake Detected 🎉")
 
