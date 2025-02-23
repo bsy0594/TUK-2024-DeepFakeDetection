@@ -3,3 +3,6 @@ sqlalchemy
 asyncpg
 watchfiles
 uuid7
+numpy
+opencv-python-headless
+imageio

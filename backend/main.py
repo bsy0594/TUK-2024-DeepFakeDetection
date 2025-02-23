@@ -8,6 +8,7 @@ import os
 import uuid
 import shutil
 import random
+from ml.process_video import extract_frames
 
 # 애플리케이션 시작 시 데이터베이스 테이블 생성
 async def init_db():
@@ -26,6 +27,7 @@ app = FastAPI(lifespan=lifespan)
 
 IMAGE_DIR = "images"
 VIDEO_DIR = "videos"
+# VIDEO_DIR = "images"
 
 os.makedirs(IMAGE_DIR, exist_ok=True)  # 디렉토리가 없으면 생성
 os.makedirs(VIDEO_DIR, exist_ok=True)
@@ -50,14 +52,19 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
     video_directory = os.path.join(VIDEO_DIR, video_id)  # 저장할 디렉토리 경로
     os.makedirs(video_directory, exist_ok=True)  # 디렉토리가 없으면 생성
 
-    # 파일 저장
-    file_extension = file.filename.split(".")[-1]  # 확장자 추출
-    # filename = f"{video_id}.{file_extension}"  # 고유한 파일명 생성
+    # # 파일 저장
+    # file_extension = file.filename.split(".")[-1]  # 확장자 추출
+    # # filename = f"{video_id}.{file_extension}"  # 고유한 파일명 생성
     filename = file.filename
     file_path = os.path.join(video_directory, filename)  # 저장할 경로
 
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
+
+    # 파일 저장
+    image_directory = os.path.join(IMAGE_DIR, video_id)
+    os.makedirs(image_directory, exist_ok=True)
+    extract_frames(file_path, image_directory)
 
     # DB에 저장
     video = models.Video(id=video_id, is_deepfake=random.choice([True, False]), model=model)
@@ -65,9 +72,10 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
     await db.commit()
 
     # 로컬에 있는 이미지 파일을 URL로 변환하여 반환
-    image_files = os.listdir(IMAGE_DIR)
+    # image_files = os.listdir(IMAGE_DIR)
+    image_files = os.listdir(image_directory)
     image_urls = [
-        {"frame_index": index, "original_image": f"/static/{filename}", "gradcam_image": f"/static/{filename}", "prediction": random.random()}
+        {"frame_index": index, "original_image": f"/static/{video_id}/{filename}", "gradcam_image": f"/static/{filename}", "prediction": random.random()}
         for index, filename in enumerate(image_files)
     ]
     
