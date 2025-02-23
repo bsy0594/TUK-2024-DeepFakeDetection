@@ -6,5 +6,6 @@ backend/videos/
 # frontend
 frontend/__pycache__/
 frontend/df_env/
+frontend/.DS_Store
 
 # ml
