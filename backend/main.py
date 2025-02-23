@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import models, database, schemas, crud
 from contextlib import asynccontextmanager
+from uuid_extensions import uuid7str
 import os
 import uuid
 import shutil
@@ -42,31 +43,31 @@ async def readUsers(skip: int = 0, limit: int = 10, db: AsyncSession = Depends(d
     return await crud.get_users(db, skip=skip, limit=limit)
 
 @app.post("/video/")
-async def postVideo(file: UploadFile = File(...), model: str = Form(...)):
+async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: AsyncSession = Depends(database.get_db)):
     """클라이언트가 업로드한 동영상을 서버에 저장하고, 저장된 URL을 반환"""
-    unique_id = str(uuid.uuid4())  # 파일명 충돌 방지를 위한 UUID 생성
+    # UUID 생성 및 디렉토리 생성
+    video_id = uuid7str()  # 파일명 충돌 방지를 위한 UUID 생성
+    video_directory = os.path.join(VIDEO_DIR, video_id)  # 저장할 디렉토리 경로
+    os.makedirs(video_directory, exist_ok=True)  # 디렉토리가 없으면 생성
+
+    # 파일 저장
     file_extension = file.filename.split(".")[-1]  # 확장자 추출
-    filename = f"{unique_id}.{file_extension}"  # 고유한 파일명 생성
-    file_path = os.path.join(VIDEO_DIR, filename)  # 저장할 경로
+    # filename = f"{video_id}.{file_extension}"  # 고유한 파일명 생성
+    filename = file.filename
+    file_path = os.path.join(video_directory, filename)  # 저장할 경로
 
-    # # 파일 저장
-    # with open(file_path, "wb") as buffer:
-    #     shutil.copyfileobj(file.file, buffer)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
 
-    # file_url = f"/static/{filename}"  # 저장된 파일의 URL 생성
-
-    # return {"video_id": unique_id, "video_url": file_url}
+    # DB에 저장
+    video = models.Video(id=video_id, is_deepfake=random.choice([True, False]), model=model)
+    db.add(video)
+    await db.commit()
 
     # 로컬에 있는 이미지 파일을 URL로 변환하여 반환
     image_files = os.listdir(IMAGE_DIR)
-    
-    # # 이미지 파일들에 대한 URL 생성
-    # image_urls = [
-    #     {"image_id": str(uuid.uuid4()), "image_url": f"/static/{filename}", "prediction": random.random()}
-    #     for filename in image_files
-    # ]
     image_urls = [
-        {"frame_index": index, "image_url": f"/static/{filename}", "prediction": random.random()}
+        {"frame_index": index, "original_image": f"/static/{filename}", "gradcam_image": f"/static/{filename}", "prediction": random.random()}
         for index, filename in enumerate(image_files)
     ]
     
