@@ -5,6 +5,6 @@ backend/videos/
 
 # frontend
 frontend/__pycache__/
-df_env/
+frontend/df_env/
 
 # ml
