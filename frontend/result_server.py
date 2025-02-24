@@ -13,7 +13,7 @@ def main_result(placeholder, uploaded_file, model_name):
     placeholder.empty()
 
     # 서버로 파일 및 옵션 전송
-    FASTAPI_URL = "http://218.48.124.18:8000"
+    FASTAPI_URL = "http://127.0.0.1:8000"
     detection_post_endpoint = "/video/"
     api_url = urljoin(FASTAPI_URL, detection_post_endpoint)
 
@@ -100,8 +100,10 @@ def detail_result(placeholder):
         st.markdown(f"**Size:** {uploaded_file.size / 1048576:.2f} MB")
 
     with col2:
+        analysis_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        st.sesstion_state.analysis_date = analysis_date
         st.markdown(f"**Model:** {model_name}")
-        st.markdown(f"**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        st.markdown(f"**Date:** {analysis_date}")
 
     # 확률이 높은 프레임들 출력
     st.markdown(
@@ -149,5 +151,19 @@ def detail_result(placeholder):
 
     fig = px.line(df, x="Frame", y="Probability")
     fig.update_xaxes(rangeslider_visible=True)
+    
+    img_bytes = BytesIO()
+    fig.write_image(img_bytes, format="png")
+    img_bytes.seek(0)
+    st.session_state.img_bytes = img_bytes
 
     st.plotly_chart(fig, use_container_width=True)
+
+    # 문서 제작하러 가기
+    if "documentation" not in st.session_state:
+        st.session_state.documentation = False
+
+    def click_documentation():
+        st.session_state.documentation = True
+    
+    st.button("Create Documentation 📄", on_click=click_documentation)
