@@ -2,3 +2,13 @@ fastapi[all]
 sqlalchemy
 asyncpg
 watchfiles
+uuid7
+opencv-python-headless
+pillow
+tqdm
+
+# torch는 일단 Windows / CPU 버전으로 설치하도록 했으니 이후 환경을 옮기면 그에 맞춰 문서를 재작성할것.
+# https://pytorch.org/get-started/locally/
+torch
+torchvision
+torchaudio
