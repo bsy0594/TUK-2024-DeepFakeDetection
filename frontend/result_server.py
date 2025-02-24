@@ -24,6 +24,7 @@ def main_result(placeholder, uploaded_file, model_name):
     if response.status_code == 200:
         # 서버 응답 저장
         data = response.json()
+        st.write(data)
         
         frame_index = []
         original_image = []
@@ -63,8 +64,6 @@ def main_result(placeholder, uploaded_file, model_name):
                 st.image(image, use_container_width=True)
             else:
                 st.error("Image not found")
-
-            # st.image(frame_url, use_container_width=True)
         else:
             st.markdown("# No Deepfake Detected 🎉")
 
@@ -101,7 +100,7 @@ def detail_result(placeholder):
 
     with col2:
         analysis_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        st.sesstion_state.analysis_date = analysis_date
+        st.session_state.analysis_date = analysis_date
         st.markdown(f"**Model:** {model_name}")
         st.markdown(f"**Date:** {analysis_date}")
 
@@ -132,6 +131,8 @@ def detail_result(placeholder):
             st.image(image, caption=f"'{frame_name}' is suspected to be deepfake with {prob*100:.2f}%")
         else:
             st.error("Gradcam Image not found")
+        frame_name = os.path.basename(gradcam_image_url)
+        st.image(gradcam_image_url, caption=f"'{frame_name}' is suspected to be deepfake with {prob*100:.2f}%")
     else:
         if original_image_response.status_code == 200:
             frame_name = os.path.basename(original_image_url)
