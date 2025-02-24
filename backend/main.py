@@ -69,16 +69,19 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
     # # 파일 저장
     # file_extension = file.filename.split(".")[-1]  # 확장자 추출
     # # filename = f"{video_id}.{file_extension}"  # 고유한 파일명 생성
-    filename = file.filename
-    file_path = os.path.join(video_directory, filename)  # 저장할 경로
+    video_filename = file.filename
+    video_file_path = os.path.join(video_directory, video_filename)  # 저장할 경로
 
-    with open(file_path, "wb") as buffer:
+    with open(video_file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
     # 파일 저장
     image_directory = os.path.join(IMAGE_DIR, video_id)
-    os.makedirs(image_directory, exist_ok=True)
-    extract_frames(file_path, image_directory)
+    original_image_directory = os.path.join(image_directory, "original")
+    gradcam_image_directory = os.path.join(image_directory, "gradcam")
+    os.makedirs(original_image_directory, exist_ok=True)
+    os.makedirs(gradcam_image_directory, exist_ok=True)
+    extract_frames(video_file_path, original_image_directory)
 
     # DB에 저장
     video = models.Video(id=video_id, is_deepfake=random.choice([True, False]), model=model)
