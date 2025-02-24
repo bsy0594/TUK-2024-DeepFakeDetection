@@ -9,10 +9,10 @@ import numpy as np
 import cv2
 
 # process_gradcam.py에서 GradCAM 관련 함수들을 import
-from process_gradcam import generate_gradcam, apply_gradcam_overlay
+from .process_gradcam import generate_gradcam, apply_gradcam_overlay
 
 # ✅ 모델 불러오기
-MODEL_PATH = "model/CelebDF_model_20_epochs_99acc.pt"
+MODEL_PATH = "ml/model/CelebDF_model_20_epochs_99acc.pt"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # ✅ 모델 로드
@@ -71,7 +71,7 @@ def predict(images_tensor):
     return probabilities
 
 # ✅ 전체 프레임 처리 (각 프레임에 대해 예측 및 GradCAM 적용 후 결과를 JSON 파일로 저장)
-def process_all_frames(root_folder, output_file, batch_size=16, use_gradcam=False):
+def process_all_frames(root_folder, batch_size=16, use_gradcam=False):
     """
     지정한 폴더 내의 모든 이미지 파일(.jpg)에 대해 딥페이크 확률 예측을 수행하고,
     선택적으로 GradCAM을 적용하여 결과 이미지를 저장한 후, 예측 결과(확률 및 GradCAM 이미지 경로)를 JSON 파일로 저장합니다.
@@ -83,7 +83,7 @@ def process_all_frames(root_folder, output_file, batch_size=16, use_gradcam=Fals
         use_gradcam (bool): True이면 GradCAM을 적용하여 결과 이미지 저장.
     """
     # 입력 폴더 내의 모든 jpg 파일 경로를 정렬하여 리스트로 만듭니다.
-    frames_dir = os.path.join(root_folder, "frames")
+    frames_dir = os.path.join(root_folder, "original")
     #print("frames_dir 절대 경로:", os.path.abspath(frames_dir))
     #print("frames_dir 파일 목록:", os.listdir(frames_dir))
     image_files = sorted([os.path.join(frames_dir, f) for f in os.listdir(frames_dir) if f.endswith(".jpg")])
@@ -92,7 +92,7 @@ def process_all_frames(root_folder, output_file, batch_size=16, use_gradcam=Fals
         return
 
 
-    results = {}
+    results = []
 
     # GradCAM 적용 시, 결과 이미지를 저장할 "gradcam" 폴더(루트 경로에 생성)를 준비합니다.
     if use_gradcam:
@@ -108,7 +108,8 @@ def process_all_frames(root_folder, output_file, batch_size=16, use_gradcam=Fals
         probs = predict(batch_images)
         for path, img_tensor, prob in zip(batch_paths, batch_images, probs):
             frame_name = os.path.basename(path)
-            result_data = {"probability": float(prob)}
+            results.append(float(prob))
+            # result_data = {"probability": float(prob)}
 
             # GradCAM 적용 여부
             if use_gradcam:
@@ -119,20 +120,21 @@ def process_all_frames(root_folder, output_file, batch_size=16, use_gradcam=Fals
 
                 # gradcam 결과는 루트 폴더의 "gradcam" 폴더에 저장 (원본 파일명에 _gradcam 접미어 추가)
                 base_name, ext = os.path.splitext(frame_name)
-                gradcam_filename = f"{base_name}_gradcam{ext}"
+                gradcam_filename = f"gradcam_{base_name}{ext}"
                 gradcam_path = os.path.join(gradcam_folder, gradcam_filename)
                 cv2.imwrite(gradcam_path, gradcam_image)
 
                 # JSON 결과에 GradCAM 이미지 경로 추가
-                result_data["gradcam_path"] = gradcam_path
+                # result_data["gradcam_path"] = gradcam_path
 
             # 각 이미지의 결과 데이터를 results 딕셔너리에 저장합니다.
-            results[frame_name] = result_data
+            # results[frame_name] = result_data
+    return results
 
     # 모든 결과를 JSON 파일로 저장합니다.
-    with open(output_file, "w") as f:
-        json.dump(results, f, indent=4)
-    print(f"✅ 예측 결과 저장 완료: {output_file}")
+    # with open(output_file, "w") as f:
+    #     json.dump(results, f, indent=4)
+    # print(f"✅ 예측 결과 저장 완료: {output_file}")
 
 # ✅ 실행 예시 (Main)
 if __name__ == "__main__":

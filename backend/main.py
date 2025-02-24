@@ -9,6 +9,7 @@ import uuid
 import shutil
 import random
 from ml.process_video import extract_frames
+from ml.predict_deepfake_model import process_all_frames
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -83,6 +84,9 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
     os.makedirs(gradcam_image_directory, exist_ok=True)
     extract_frames(video_file_path, original_image_directory)
 
+    # 예측
+    predictions = process_all_frames(image_directory, use_gradcam=True)
+
     # DB에 저장
     video = models.Video(id=video_id, is_deepfake=random.choice([True, False]), model=model)
     db.add(video)
@@ -92,7 +96,7 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
     # image_files = os.listdir(IMAGE_DIR)
     image_files = os.listdir(image_directory)
     image_urls = [
-        {"frame_index": index, "original_image": f"/static/{video_id}/{filename}", "gradcam_image": f"/static/{video_id}/{filename}", "prediction": random.random()}
+        {"frame_index": index, "original_image": f"/static/{video_id}/original/{filename}", "gradcam_image": f"/static/{video_id}/gradcam/{filename}", "prediction": predictions[index]}
         for index, filename in enumerate(image_files)
     ]
     
