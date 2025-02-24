@@ -9,7 +9,7 @@ import uuid
 import shutil
 import random
 from ml.process_video import extract_frames
-from ml.predict_deepfake_model import process_all_frames
+# from ml.predict_deepfake_model import process_all_frames
 from fastapi.middleware.cors import CORSMiddleware
 
 
