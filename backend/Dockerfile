@@ -1,6 +1,6 @@
 # 1. 사용할 Python 기반 이미지 선택
 # FROM python:3.13.2
-FROM python:3.13.2
+FROM python:3.10
 
 # 2. 컨테이너 내부에서 사용할 작업 디렉토리 설정
 WORKDIR /app
@@ -10,7 +10,7 @@ COPY requirements.txt .
 
 # Rust 설치
 RUN apt update
-RUN apt install -y rustc cargo
+# RUN apt install -y rustc cargo
 
 # 4. pip를 최신 버전으로 업데이트
 RUN python -m pip install --upgrade pip

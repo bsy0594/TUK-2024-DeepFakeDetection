@@ -107,9 +107,9 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
 
     # 로컬에 있는 이미지 파일을 URL로 변환하여 반환
     # image_files = os.listdir(IMAGE_DIR)
-    image_files = os.listdir(original_image_directory)
+    image_files = sorted(os.listdir(original_image_directory))
     image_urls = [ # 노트북이라 비활성화
-        {"frame_index": index, "original_image": f"/static/{video_id}/original/{filename}", "gradcam_image": f"/static/{video_id}/gradcam/{filename}", "prediction": predictions[index]}
+        {"frame_index": index, "original_image": f"/static/{video_id}/original/{filename}", "gradcam_image": f"/static/{video_id}/gradcam/gradcam_{filename}", "prediction": predictions[index]}
         # {"frame_index": index, "original_image": f"/static/{video_id}/original/{filename}", "gradcam_image": f"/static/{video_id}/original/{filename}", "prediction": random.random()}
         for index, filename in enumerate(image_files)
     ]

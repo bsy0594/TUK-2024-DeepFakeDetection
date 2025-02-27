@@ -4,9 +4,6 @@ asyncpg
 watchfiles
 uuid7
 opencv-python-headless
-pillow
-tqdm
-numpy
 
 # torch는 일단 Windows / CPU 버전으로 설치하도록 했으니 이후 환경을 옮기면 그에 맞춰 문서를 재작성할것. - 재작성된 버전
 # https://pytorch.org/get-started/locally/
@@ -15,3 +12,7 @@ torchvision
 torchaudio
 
 # # ml requirements
+pillow
+tqdm
+numpy
+timm==0.6.13

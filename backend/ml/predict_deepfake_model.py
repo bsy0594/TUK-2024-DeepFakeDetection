@@ -13,11 +13,12 @@ from .process_gradcam import generate_gradcam, apply_gradcam_overlay
 
 # ✅ 모델 불러오기
 MODEL_PATH = "ml/model/CelebDF_model_20_epochs_99acc.pt"
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
 
 # ✅ 모델 로드
 # 모델 체크포인트를 불러와 모델 구조와 가중치를 설정하고, 평가 모드로 전환합니다.
-checkpoint = torch.load(MODEL_PATH, map_location=device)
+checkpoint = torch.load(MODEL_PATH, map_location=device, weights_only=False)
 model = checkpoint['model']
 model.load_state_dict(checkpoint['model_state_dict'])
 model = model.to(device, memory_format=torch.channels_last)
@@ -82,6 +83,10 @@ def process_all_frames(root_folder, batch_size=16, use_gradcam=False):
         batch_size (int): 배치 처리 시 한 번에 읽어올 이미지 수.
         use_gradcam (bool): True이면 GradCAM을 적용하여 결과 이미지 저장.
     """
+    # 테스트 출력력
+    print(f"device: {device}")
+    print(torch.cuda.current_device())  # GPU ID 출력
+    print(torch.cuda.get_device_name(0))  # GPU 모델명 확인
     # 입력 폴더 내의 모든 jpg 파일 경로를 정렬하여 리스트로 만듭니다.
     frames_dir = os.path.join(root_folder, "original")
     #print("frames_dir 절대 경로:", os.path.abspath(frames_dir))
