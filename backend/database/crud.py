@@ -5,10 +5,10 @@ from .schemas import UserCreate
 
 # 새로운 사용자 추가 (비동기)
 async def create_user(db: AsyncSession, user: UserCreate):
-    db_user = User(name=user.name, email=user.email, password=user.password)
+    db_user = User(id=user.id, nickname=user.nickname, email=user.email, hashed_password=user.password)
     db.add(db_user)
     await db.commit()
-    await db.refresh(db_user)
+    # await db.refresh(db_user)
     return db_user
 
 # 모든 사용자 조회 (비동기)
