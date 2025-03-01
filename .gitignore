@@ -2,16 +2,12 @@
 **/__pycache__/
 
 # backend
-backend/__pycache__/
-backend/database/__pycache__/
-backend/videos/
-backend/images/
+backend/uploaded_videos/
+backend/uploaded_images/
 
 # frontend
-frontend/__pycache__/
 
 # ml
-backend/ml/__pycache__/
 
 df_env/bin/activate
 df_env/bin/activate.csh
