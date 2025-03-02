@@ -43,4 +43,5 @@ app.include_router(user.router, prefix="/user")
 
 @app.get("/")
 async def root():
+    """API 서버 동작 여부 확인"""
     return {"message": "Hello, World!"}

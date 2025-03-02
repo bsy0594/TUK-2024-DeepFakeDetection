@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime, Float, PrimaryKeyConstraint
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime, Float, PrimaryKeyConstraint, TIMESTAMP
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, relationship
 from sqlalchemy.dialects.postgresql import UUID
@@ -26,7 +26,7 @@ class Video(Base):
     # user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)  # 외래 키 (User 테이블의 id 참조) - 지금은 로그인 기능을 구현하지 않아 비활성화
     is_deepfake = Column(Boolean, nullable=False)  # 딥페이크 여부 (True/False)
     model = Column(String, nullable=False)  # 사용된 모델
-    created_at = Column(DateTime, default=datetime.now(timezone.utc))  # 업로드 시간 - 지금은 오류가 발생하여 비활성화
+    created_at = Column(TIMESTAMP(timezone=True), default=datetime.now(timezone.utc))  # 업로드 시간
 
     # 관계 설정
     # user = relationship("User", back_populates="videos") - 로그인 기능을 구현하지 않아 비활성화
