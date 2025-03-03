@@ -33,7 +33,7 @@ def verify_access_token(token: str = Depends(oauth2_scheme)):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except JWTError: # 이 exception들 어떻게 처리할지 고민 좀 해봐야 할 듯 --------------------------
-        return None
+        return HTTPException(status_code=401, detail="Could not validate credentials")
     except ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
     except JWTClaimsError:
