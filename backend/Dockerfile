@@ -1,5 +1,5 @@
 # 1. 사용할 Python 기반 이미지 선택
-FROM python:3.13.2
+FROM python:3.10
 
 # 2. 컨테이너 내부에서 사용할 작업 디렉토리 설정
 WORKDIR /app

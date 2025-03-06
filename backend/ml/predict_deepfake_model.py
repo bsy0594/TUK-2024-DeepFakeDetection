@@ -17,7 +17,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # ✅ 모델 로드
 # 모델 체크포인트를 불러와 모델 구조와 가중치를 설정하고, 평가 모드로 전환합니다.
-checkpoint = torch.load(MODEL_PATH, map_location=device)
+checkpoint = torch.load(MODEL_PATH, map_location=device, weights_only=False)
 model = checkpoint['model']
 model.load_state_dict(checkpoint['model_state_dict'])
 model = model.to(device, memory_format=torch.channels_last)
