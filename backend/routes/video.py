@@ -6,7 +6,7 @@ import os
 import shutil
 import random
 from ml.process_video import extract_frames
-# from ml.predict_deepfake_model import process_all_frames
+from ml.predict_deepfake_model import process_all_frames
 from config import *
 
 router = APIRouter()
@@ -23,6 +23,8 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
     os.makedirs(video_directory, exist_ok=True)  # 디렉토리가 없으면 생성
 
     # # 파일 저장
+    # file_extension = file.filename.split(".")[-1]  # 확장자 추출
+    # # filename = f"{video_id}.{file_extension}"  # 고유한 파일명 생성
     video_filename = file.filename
     video_file_path = os.path.join(video_directory, video_filename)  # 저장할 경로
 
@@ -37,19 +39,30 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
     os.makedirs(gradcam_image_directory, exist_ok=True)
     extract_frames(video_file_path, original_image_directory)
 
-    # 예측 - 노트북이라 비활성화
-    # predictions = process_all_frames(image_directory, use_gradcam=True)
+    # 예측 - 노트북이라 비활성화 - 활성화
+    predictions = process_all_frames(image_directory, use_gradcam=True)
+    
+    is_deepfake = any(prob > THRESHOLD for prob in predictions)
 
-    # DB에 저장
-    video = models.Video(id=video_id, is_deepfake=random.choice([True, False]), model=model)
+    # 비디오 정보 DB에 저장
+    video = models.Video(id=video_id, is_deepfake=is_deepfake, model=model)
     db.add(video)
+    await db.commit()
+    
+    # 프레임별 예측 결과 저장
+    frame_predictions = [
+        models.FramePrediction(video_id=video_id, frame_number=index, deepfake_probability=pred)
+        for index, pred in enumerate(predictions)
+    ]
+    db.add_all(frame_predictions)
     await db.commit()
 
     # 로컬에 있는 이미지 파일을 URL로 변환하여 반환
-    image_files = os.listdir(original_image_directory)
+    # image_files = os.listdir(IMAGE_DIR)
+    image_files = sorted(os.listdir(original_image_directory))
     image_urls = [ # 노트북이라 비활성화
-        # {"frame_index": index, "original_image": f"/static/{video_id}/original/{filename}", "gradcam_image": f"/static/{video_id}/gradcam/{filename}", "prediction": predictions[index]}
-        {"frame_index": index, "original_image": f"/static/{video_id}/original/{filename}", "gradcam_image": f"/static/{video_id}/original/{filename}", "prediction": random.random()}
+        {"frame_index": index, "original_image": f"/static/{video_id}/original/{filename}", "gradcam_image": f"/static/{video_id}/gradcam/gradcam_{filename}", "prediction": predictions[index]}
+        # {"frame_index": index, "original_image": f"/static/{video_id}/original/{filename}", "gradcam_image": f"/static/{video_id}/original/{filename}", "prediction": random.random()}
         for index, filename in enumerate(image_files)
     ]
     

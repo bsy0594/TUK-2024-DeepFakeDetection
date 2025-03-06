@@ -6,3 +6,6 @@ VIDEO_DIR = "uploaded_videos"
 SECRET_KEY="super_ultra_secret_key" # JWT 암호화 키
 ALGORITHM = "HS256" # JWT 알고리즘
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 30분 후 토큰 만료
+
+# 딥페이크 예측 관련
+THRESHOLD = 0.5  # 딥페이크로 판단할 확률 임계값
