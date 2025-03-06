@@ -82,6 +82,10 @@ def process_all_frames(root_folder, batch_size=16, use_gradcam=False):
         batch_size (int): 배치 처리 시 한 번에 읽어올 이미지 수.
         use_gradcam (bool): True이면 GradCAM을 적용하여 결과 이미지 저장.
     """
+    # 테스트 출력
+    print(f"device: {device}")
+    print(torch.cuda.current_device())  # GPU ID 출력
+    print(torch.cuda.get_device_name(0))  # GPU 모델명 확인
     # 입력 폴더 내의 모든 jpg 파일 경로를 정렬하여 리스트로 만듭니다.
     frames_dir = os.path.join(root_folder, "original")
     #print("frames_dir 절대 경로:", os.path.abspath(frames_dir))
