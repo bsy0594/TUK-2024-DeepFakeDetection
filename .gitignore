@@ -4,8 +4,8 @@ backend/database/__pycache__/
 backend/videos/
 
 # frontend
+frontend/.vscode/
 frontend/__pycache__/
-frontend/df_env/
 ./.DS_Store
 
 # ml
