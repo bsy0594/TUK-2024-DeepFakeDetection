@@ -2,7 +2,7 @@
 
 services:
   fastapi:
-    build: apiserver:latest
+    build: .
     container_name: fastapi-container
     image: fastapi-container
     ports:
