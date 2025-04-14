@@ -1,6 +1,7 @@
 import torch
 import torch.nn.functional as F
 import torchvision.transforms as transforms
+import timm.models.xception as Xception
 from PIL import Image
 import os
 import json
@@ -9,15 +10,16 @@ import numpy as np
 import cv2
 
 # process_gradcam.py에서 GradCAM 관련 함수들을 import
-from .process_gradcam import generate_gradcam, apply_gradcam_overlay
+from process_gradcam import generate_gradcam, apply_gradcam_overlay
 
 # ✅ 모델 불러오기
-MODEL_PATH = "ml/model/CelebDF_model_20_epochs_99acc.pt"
+MODEL_PATH = "model/CelebDF_model_20_epochs_99acc.pt"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # ✅ 모델 로드
 # 모델 체크포인트를 불러와 모델 구조와 가중치를 설정하고, 평가 모드로 전환합니다.
-checkpoint = torch.load(MODEL_PATH, map_location=device)
+torch.serialization.add_safe_globals([Xception])
+checkpoint = torch.load(MODEL_PATH, map_location=device, weights_only=False)
 model = checkpoint['model']
 model.load_state_dict(checkpoint['model_state_dict'])
 model = model.to(device, memory_format=torch.channels_last)
@@ -83,7 +85,7 @@ def process_all_frames(root_folder, batch_size=16, use_gradcam=False):
         use_gradcam (bool): True이면 GradCAM을 적용하여 결과 이미지 저장.
     """
     # 입력 폴더 내의 모든 jpg 파일 경로를 정렬하여 리스트로 만듭니다.
-    frames_dir = os.path.join(root_folder, "original")
+    frames_dir = os.path.join(root_folder, "frames")
     #print("frames_dir 절대 경로:", os.path.abspath(frames_dir))
     #print("frames_dir 파일 목록:", os.listdir(frames_dir))
     image_files = sorted([os.path.join(frames_dir, f) for f in os.listdir(frames_dir) if f.endswith(".jpg")])
