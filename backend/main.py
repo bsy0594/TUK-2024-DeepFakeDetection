@@ -1,12 +1,29 @@
-from fastapi import FastAPI, Depends, UploadFile, File, Form
+from fastapi import FastAPI, Depends, UploadFile, File, Form, Request
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import models, database, schemas, crud
 from contextlib import asynccontextmanager
 # from ml.predict_deepfake_model import process_all_frames
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from config import *
 from routes import video, user
+import logging
+
+class LogDisconnectMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        try:
+            response = await call_next(request)
+            return response
+        
+        except (BrokenPipeError, ConnectionResetError) as e:
+            logging.warning(f"⚠️ 클라이언트 연결 끊김: {request.url} - {type(e).__name__}")
+            return {"error": "Client disconnected before response could be sent"}
+        
+        except Exception as e:
+            logging.warning(f"🔥 처리 중 오류 발생: {type(e).__name__} - {str(e)}")
+            raise e
+        
 
 
 # 애플리케이션 시작 시 데이터베이스 테이블 생성
@@ -35,6 +52,8 @@ app.add_middleware(
     allow_methods=["*"],  # 모든 HTTP 메서드 허용 (GET, POST, PUT 등)
     allow_headers=["*"],  # 모든 HTTP 헤더 허용
 )
+
+app.add_middleware(LogDisconnectMiddleware)  # 클라이언트 연결 끊김 로그 미들웨어 추가
 
 app.mount("/static", StaticFiles(directory=IMAGE_DIR), name="static")
 

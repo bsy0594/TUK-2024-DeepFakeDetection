@@ -5,6 +5,7 @@
 backend/videos/
 backend/uploaded_images/
 backend/uploaded_videos/
+.frontenv
 
 # frontend
 frontend/df_env/

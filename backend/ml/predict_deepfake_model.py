@@ -25,7 +25,7 @@ model.eval()
 
 # ✅ 마지막 Convolutional Layer 설정 (XceptionNet 구조에 맞게 수정)
 # GradCAM을 적용할 대상 layer를 지정합니다.
-target_layer = model.conv1  # 🚩 모델 구조에 따라 변경 필요
+target_layer = model.conv4  # 🚩 모델 구조에 따라 변경 필요
 
 # ✅ 이미지 전처리 (224x224 크기로 변환)
 # PIL 이미지 데이터를 224x224 크기로 변환 후 Tensor로 변경합니다.

@@ -8,6 +8,7 @@ import random
 from ml.process_video import extract_frames
 from ml.predict_deepfake_model import process_all_frames
 from config import *
+import logging
 
 router = APIRouter()
 
@@ -26,6 +27,8 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
     # file_extension = file.filename.split(".")[-1]  # 확장자 추출
     # # filename = f"{video_id}.{file_extension}"  # 고유한 파일명 생성
     video_filename = file.filename
+    print(f"video_filename: {video_filename}")
+    
     video_file_path = os.path.join(video_directory, video_filename)  # 저장할 경로
 
     with open(video_file_path, "wb") as buffer:
@@ -43,7 +46,8 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
     predictions = process_all_frames(image_directory, use_gradcam=True)
     
     is_deepfake = any(prob > THRESHOLD for prob in predictions)
-
+    # is_deepfake = True
+    
     # 비디오 정보 DB에 저장
     video = models.Video(id=video_id, is_deepfake=is_deepfake, model=model)
     db.add(video)
@@ -67,3 +71,10 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
     ]
     
     return {"model": model, "images": image_urls}
+    # except (BrokenPipeError, ConnectionResetError) as e:
+    #     print(f"⚠️ 클라이언트 연결 종료됨: {type(e).__name__} - {str(e)}")
+    #     return {"error": "Client disconnected before response could be sent"}
+
+    # except Exception as e:
+    #     print(f"🔥 처리 중 오류 발생: {type(e).__name__} - {str(e)}")
+    #     return {"error": "An error occurred while processing the video"}

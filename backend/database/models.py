@@ -17,7 +17,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
 
     # 관계 설정
-    # videos = relationship("Video", back_populates="user", cascade="all, delete-orphan") - 로그인 기능을 구현하지 않아 비활성화
+    videos = relationship("Video", back_populates="user", cascade="all, delete-orphan") # - 로그인 기능을 구현하지 않아 비활성화 - 활성화
 
 class Video(Base):
     __tablename__ = "videos"
@@ -29,7 +29,7 @@ class Video(Base):
     created_at = Column(TIMESTAMP(timezone=True), default=datetime.now(timezone.utc))  # 업로드 시간
 
     # 관계 설정
-    # user = relationship("User", back_populates="videos") - 로그인 기능을 구현하지 않아 비활성화
+    user = relationship("User", back_populates="videos") # - 로그인 기능을 구현하지 않아 비활성화 - 활성화
     frames = relationship("FramePrediction", back_populates="video", cascade="all, delete-orphan")
 
 class FramePrediction(Base):
