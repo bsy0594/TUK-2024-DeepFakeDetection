@@ -8,7 +8,6 @@ import random
 from ml.process_video import extract_frames
 from ml.predict_deepfake_model import process_all_frames
 from config import *
-import logging
 
 router = APIRouter()
 
@@ -71,10 +70,3 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
     ]
     
     return {"model": model, "images": image_urls}
-    # except (BrokenPipeError, ConnectionResetError) as e:
-    #     print(f"⚠️ 클라이언트 연결 종료됨: {type(e).__name__} - {str(e)}")
-    #     return {"error": "Client disconnected before response could be sent"}
-
-    # except Exception as e:
-    #     print(f"🔥 처리 중 오류 발생: {type(e).__name__} - {str(e)}")
-    #     return {"error": "An error occurred while processing the video"}

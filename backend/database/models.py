@@ -23,7 +23,7 @@ class Video(Base):
     __tablename__ = "videos"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid7())  # 비디오 고유 ID
-    # user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)  # 외래 키 (User 테이블의 id 참조) - 지금은 로그인 기능을 구현하지 않아 비활성화
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)  # 외래 키 (User 테이블의 id 참조) - 지금은 로그인 기능을 구현하지 않아 비활성화 - 활성화화
     is_deepfake = Column(Boolean, nullable=False)  # 딥페이크 여부 (True/False)
     model = Column(String, nullable=False)  # 사용된 모델
     created_at = Column(TIMESTAMP(timezone=True), default=datetime.now(timezone.utc))  # 업로드 시간

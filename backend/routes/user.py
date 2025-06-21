@@ -53,6 +53,13 @@ async def login(request: schemas.UserLogin, db: AsyncSession = Depends(database.
     if not user or not verify_password(request.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    access_token = create_access_token({"sub": user.nickname})
+    access_token = create_access_token({"sub": user.id})
 
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.get("/mypage/videos")
+async def get_user_videos(token: dict = Depends(verify_access_token), db: AsyncSession = Depends(database.get_db)):
+    """사용자 마이페이지 - 사용자가 업로드한 비디오 목록 조회"""
+    user_id = token.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid token")
