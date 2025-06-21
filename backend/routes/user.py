@@ -59,7 +59,7 @@ async def login(request: schemas.UserLogin, db: AsyncSession = Depends(database.
 
 @router.get("/mypage/videos")
 async def get_user_videos(token: dict = Depends(verify_access_token), db: AsyncSession = Depends(database.get_db)):
-    """사용자 마이페이지 - 사용자가 업로드한 비디오 목록 조회"""
+    """사용자 마이페이지 - 사용자가 업로드한 비디오 목록 조회 / 미완"""
     user_id = token.get("sub")
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid token")
