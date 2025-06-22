@@ -17,19 +17,19 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
 
     # 관계 설정
-    videos = relationship("Video", back_populates="user", cascade="all, delete-orphan") # - 로그인 기능을 구현하지 않아 비활성화 - 활성화
+    # videos = relationship("Video", back_populates="user", cascade="all, delete-orphan") # - 로그인 기능을 구현하지 않아 비활성화
 
 class Video(Base):
     __tablename__ = "videos"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid7())  # 비디오 고유 ID
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)  # 외래 키 (User 테이블의 id 참조) - 지금은 로그인 기능을 구현하지 않아 비활성화 - 활성화화
+    # user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)  # 외래 키 (User 테이블의 id 참조) - 지금은 로그인 기능을 구현하지 않아 비활성화 - 활성화화
     is_deepfake = Column(Boolean, nullable=False)  # 딥페이크 여부 (True/False)
     model = Column(String, nullable=False)  # 사용된 모델
     created_at = Column(TIMESTAMP(timezone=True), default=datetime.now(timezone.utc))  # 업로드 시간
 
     # 관계 설정
-    user = relationship("User", back_populates="videos") # - 로그인 기능을 구현하지 않아 비활성화 - 활성화
+    # user = relationship("User", back_populates="videos") # - 로그인 기능을 구현하지 않아 비활성화
     frames = relationship("FramePrediction", back_populates="video", cascade="all, delete-orphan")
 
 class FramePrediction(Base):

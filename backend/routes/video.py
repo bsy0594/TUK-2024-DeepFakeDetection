@@ -34,15 +34,17 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
         shutil.copyfileobj(file.file, buffer)
 
     # 파일 저장
-    image_directory = os.path.join(IMAGE_DIR, video_id)
-    original_image_directory = os.path.join(image_directory, "original")
-    gradcam_image_directory = os.path.join(image_directory, "gradcam")
-    os.makedirs(original_image_directory, exist_ok=True)
-    os.makedirs(gradcam_image_directory, exist_ok=True)
-    extract_frames(video_file_path, original_image_directory)
+    if model == 'CNN':
+        predictions = CNNProcess(video_file_path, video_id)
+    # image_directory = os.path.join(IMAGE_DIR, video_id)
+    # original_image_directory = os.path.join(image_directory, "original")
+    # gradcam_image_directory = os.path.join(image_directory, "gradcam")
+    # os.makedirs(original_image_directory, exist_ok=True)
+    # os.makedirs(gradcam_image_directory, exist_ok=True)
+    # extract_frames(video_file_path, original_image_directory)
 
-    # 예측 - 노트북이라 비활성화 - 활성화
-    predictions = process_all_frames(image_directory, use_gradcam=True)
+    # # 예측 - 노트북이라 비활성화 - 활성화
+    # predictions = process_all_frames(image_directory, use_gradcam=True)
     
     is_deepfake = any(prob > THRESHOLD for prob in predictions)
     # is_deepfake = True
@@ -62,11 +64,32 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
 
     # 로컬에 있는 이미지 파일을 URL로 변환하여 반환
     # image_files = os.listdir(IMAGE_DIR)
-    image_files = sorted(os.listdir(original_image_directory))
-    image_urls = [ # 노트북이라 비활성화
-        {"frame_index": index, "original_image": f"/static/{video_id}/original/{filename}", "gradcam_image": f"/static/{video_id}/gradcam/gradcam_{filename}", "prediction": predictions[index]}
-        # {"frame_index": index, "original_image": f"/static/{video_id}/original/{filename}", "gradcam_image": f"/static/{video_id}/original/{filename}", "prediction": random.random()}
-        for index, filename in enumerate(image_files)
+    if model == 'CNN':
+        image_directory = os.path.join(IMAGE_DIR, video_id)
+        original_image_directory = os.path.join(image_directory, "original")
+        image_files = sorted(os.listdir(original_image_directory))
+        image_urls = [ # 노트북이라 비활성화
+            {"frame_index": index, "original_image": f"/static/{video_id}/original/{filename}", "gradcam_image": f"/static/{video_id}/gradcam/gradcam_{filename}", "prediction": predictions[index]}
+            # {"frame_index": index, "original_image": f"/static/{video_id}/original/{filename}", "gradcam_image": f"/static/{video_id}/original/{filename}", "prediction": random.random()}
+            for index, filename in enumerate(image_files)
     ]
     
     return {"model": model, "images": image_urls}
+
+def CNNProcess(video_file_path, video_id):
+    """
+    CNN 모델을 사용하여 비디오 파일을 처리하고 예측 결과를 반환합니다.
+    """
+    image_directory = os.path.join(IMAGE_DIR, video_id)
+    original_image_directory = os.path.join(image_directory, "original")
+    gradcam_image_directory = os.path.join(image_directory, "gradcam")
+    os.makedirs(original_image_directory, exist_ok=True)
+    os.makedirs(gradcam_image_directory, exist_ok=True)
+    
+    # 프레임 추출
+    extract_frames(video_file_path, original_image_directory)
+
+    # 예측 - 노트북이라 비활성화 - 활성화
+    predictions = process_all_frames(image_directory, use_gradcam=True)
+    
+    return predictions

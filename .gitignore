@@ -12,3 +12,6 @@ frontend/df_env/
 ./.DS_Store
 
 # ml
+backend/deepfake-ml-main/deepfake-adapter/scripts/xai_saliency/
+backend/deepfake-ml-main/deepfake-adapter/scripts/temp_frames_infer/
+backend/deepfake-ml-main/deepfake-adapter/outputs/checkpoints/ffpp_c23/best.pth
