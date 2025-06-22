@@ -129,9 +129,6 @@ def run_inference(
             #     # frame_000000.jpg 처럼 파일명만 키로 사용
             #     results[Path(p).name] = pr
     print("✔ Inference done\n")
-
-    for i, p in enumerate(probs):
-        print(f"Frame {i:06d}: {p:.4f}")
     
     # return probs
     return results
