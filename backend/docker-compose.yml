@@ -5,6 +5,7 @@ services:
     build: .
     container_name: fastapi-container
     image: fastapi-container
+    shm_size: '1gb'  # GPU 사용 시 메모리 공유 크기 설정
     ports:
       - "8000:8000"
     volumes:

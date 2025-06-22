@@ -15,3 +15,5 @@ frontend/df_env/
 backend/deepfake-ml-main/deepfake-adapter/scripts/xai_saliency/
 backend/deepfake-ml-main/deepfake-adapter/scripts/temp_frames_infer/
 backend/deepfake-ml-main/deepfake-adapter/outputs/checkpoints/ffpp_c23/best.pth
+backend\ml\deepfake-adapter\outputs\checkpoints\ffpp_c23\best.pth
+backend/ml/deepfake_adapter/outputs/checkpoints/ffpp_c23/best.pth

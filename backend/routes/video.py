@@ -7,6 +7,11 @@ import shutil
 import random
 from ml.process_video import extract_frames
 from ml.predict_deepfake_model import process_all_frames
+from ml.deepfake_adapter.scripts.inference_server import run_inference
+from ml.deepfake_adapter.scripts.xai_inference_server import generate_saliency_maps
+
+# from deepfake_ml_main.process_video import extract_frames
+# from deepfake_ml_main.predict_deepfake_model import process_all_frames
 from config import *
 
 router = APIRouter()
@@ -36,6 +41,8 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
     # 파일 저장
     if model == 'CNN':
         predictions = CNNProcess(video_file_path, video_id)
+    elif model == 'Transformer':
+        predictions = TransformerProcess(video_file_path, video_id)
     # image_directory = os.path.join(IMAGE_DIR, video_id)
     # original_image_directory = os.path.join(image_directory, "original")
     # gradcam_image_directory = os.path.join(image_directory, "gradcam")
@@ -72,7 +79,16 @@ async def postVideo(file: UploadFile = File(...), model: str = Form(...), db: As
             {"frame_index": index, "original_image": f"/static/{video_id}/original/{filename}", "gradcam_image": f"/static/{video_id}/gradcam/gradcam_{filename}", "prediction": predictions[index]}
             # {"frame_index": index, "original_image": f"/static/{video_id}/original/{filename}", "gradcam_image": f"/static/{video_id}/original/{filename}", "prediction": random.random()}
             for index, filename in enumerate(image_files)
-    ]
+        ]
+    elif model == 'Transformer':
+        image_directory = os.path.join(IMAGE_DIR, video_id)
+        original_image_directory = os.path.join(image_directory, "original")
+        image_files = sorted(os.listdir(original_image_directory))
+        image_urls = [ # 노트북이라 비활성화
+            {"frame_index": index, "original_image": f"/static/{video_id}/original/{filename}", "gradcam_image": f"/static/{video_id}/xai/{filename[:-4]}_sal.jpg", "prediction": predictions[index]}
+            # {"frame_index": index, "original_image": f"/static/{video_id}/original/{filename}", "gradcam_image": f"/static/{video_id}/original/{filename}", "prediction": random.random()}
+            for index, filename in enumerate(image_files)
+        ]
     
     return {"model": model, "images": image_urls}
 
@@ -91,5 +107,25 @@ def CNNProcess(video_file_path, video_id):
 
     # 예측 - 노트북이라 비활성화 - 활성화
     predictions = process_all_frames(image_directory, use_gradcam=True)
+    
+    return predictions
+
+def TransformerProcess(video_file_path, video_id):
+    """
+    Transformer 모델을 사용하여 비디오 파일을 처리하고 예측 결과를 반환합니다.
+    """
+    image_directory = os.path.join(IMAGE_DIR, video_id)
+    original_image_directory = os.path.join(image_directory, "original")
+    gradcam_image_directory = os.path.join(image_directory, "xai") # gradcam 대신 xai로 변경
+    os.makedirs(original_image_directory, exist_ok=True)
+    os.makedirs(gradcam_image_directory, exist_ok=True)
+    
+    # 프레임 추출
+    predictions = run_inference(video_file_path, original_image_directory)
+
+    generate_saliency_maps(
+        frames_dir=original_image_directory,
+        output_dir=gradcam_image_directory
+        )
     
     return predictions
