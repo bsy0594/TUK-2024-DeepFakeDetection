@@ -8,8 +8,8 @@ services:
     shm_size: '1gb'  # GPU 사용 시 메모리 공유 크기 설정
     ports:
       - "8000:8000"
-    # volumes:
-    # - .:/app  # 로컬 프로젝트 폴더를 컨테이너와 동기화
+    volumes:
+    - .:/app  # 로컬 프로젝트 폴더를 컨테이너와 동기화
     command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-dir", "/app"]  # 개발 모드에서 코드 변경 시 자동으로 서버 재시작
     depends_on:
       db:
