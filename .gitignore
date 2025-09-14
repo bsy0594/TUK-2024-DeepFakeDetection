@@ -1,0 +1,19 @@
+# 모든 .pyc 파일을 무시
+**/__pycache__/
+
+# backend
+backend/videos/
+backend/uploaded_images/
+backend/uploaded_videos/
+.frontenv
+
+# frontend
+frontend/df_env/
+./.DS_Store
+
+# ml
+backend/deepfake-ml-main/deepfake-adapter/scripts/xai_saliency/
+backend/deepfake-ml-main/deepfake-adapter/scripts/temp_frames_infer/
+backend/deepfake-ml-main/deepfake-adapter/outputs/checkpoints/ffpp_c23/best.pth
+backend\ml\deepfake-adapter\outputs\checkpoints\ffpp_c23\best.pth
+backend/ml/deepfake_adapter/outputs/checkpoints/ffpp_c23/best.pth

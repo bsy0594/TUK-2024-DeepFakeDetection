@@ -1,0 +1,11 @@
+cookie:
+  expiry_days: 30
+  key: cookie_key_for_fakemarker
+  name: cookie_name_for_fakemarker
+credentials:
+  usernames:
+    bsy0594:
+      email: bsy0594@tukorea.ac.kr
+      logged_in: false
+      name: soyoung
+      password: $2b$12$SBkX0TYLtNhGY1xumUoMsOoect/QfenL4zv0q3l/Ex8mYpWna4akG
